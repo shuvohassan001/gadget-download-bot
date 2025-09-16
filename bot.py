@@ -869,13 +869,17 @@ def handle_ultimate_video_enhancement(message):
         except Exception as e:
             bot.reply_to(message, f"{EMOJIS['error']} Premium video processing error: {str(e)[:50]}...")
 
-# 👑 PREMIUM CALLBACK HANDLER
+# 👑 PREMIUM CALLBACK HANDLER (Fixed Version)
 @bot.callback_query_handler(func=lambda call: True)
 def handle_ultimate_premium_callbacks(call):
     try:
         user_id = call.message.chat.id
         user_name = call.from_user.first_name or "Premium User"
         
+        # IMPORTANT: Answer the callback query to stop loading spinner
+        bot.answer_callback_query(call.id)
+        
+        # Now handle the callback data
         if call.data.startswith("select_"):
             platform = call.data.replace("select_", "")
             worlds_best_bot.user_sessions[user_id] = platform
@@ -923,8 +927,15 @@ def handle_ultimate_premium_callbacks(call):
             
             back_keyboard = types.InlineKeyboardMarkup()
             back_keyboard.add(types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Premium Menu", callback_data="main_menu"))
-            bot.edit_message_text(platform_text, call.message.chat.id, call.message.message_id, 
-                                parse_mode='HTML', reply_markup=back_keyboard)
+            
+            # Use edit_message_caption for media messages (like video)
+            try:
+                bot.edit_message_caption(caption=platform_text, chat_id=call.message.chat.id, message_id=call.message.message_id, 
+                                         parse_mode='HTML', reply_markup=back_keyboard)
+            except:
+                # Fallback to edit_message_text if it's a text message
+                bot.edit_message_text(text=platform_text, chat_id=call.message.chat.id, message_id=call.message.message_id, 
+                                      parse_mode='HTML', reply_markup=back_keyboard)
 
         elif call.data == "ultra_download":
             if user_id in worlds_best_bot.user_sessions:
@@ -960,9 +971,12 @@ def handle_ultimate_premium_callbacks(call):
 <b>│      {EMOJIS['heart']} UNIVERSAL PREMIUM MODE READY {EMOJIS['heart']}      │</b>
 <b>└───────────────────────────────────────────────────┘</b>
             """
-            bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode='HTML',
-            reply_markup=types.InlineKeyboardMarkup().add(
-                types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Premium Menu", callback_data="main_menu")))
+            try:
+                bot.edit_message_caption(caption=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                         reply_markup=types.InlineKeyboardMarkup().add(types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Premium Menu", callback_data="main_menu")))
+            except:
+                bot.edit_message_text(text=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                      reply_markup=types.InlineKeyboardMarkup().add(types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Premium Menu", callback_data="main_menu")))
 
         elif call.data == "ai_enhancer":
             text = f"""
@@ -1012,9 +1026,12 @@ def handle_ultimate_premium_callbacks(call):
 <b>│    {EMOJIS['nova']} PREMIUM AI ENHANCEMENT AWAITS {EMOJIS['nova']}    │</b>
 <b>└───────────────────────────────────────────────────┘</b>
             """
-            bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode='HTML',
-            reply_markup=types.InlineKeyboardMarkup().add(
-                types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Premium Menu", callback_data="main_menu")))
+            try:
+                bot.edit_message_caption(caption=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                         reply_markup=types.InlineKeyboardMarkup().add(types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Premium Menu", callback_data="main_menu")))
+            except:
+                bot.edit_message_text(text=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                      reply_markup=types.InlineKeyboardMarkup().add(types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Premium Menu", callback_data="main_menu")))
 
         elif call.data == "main_menu":
             if user_id in worlds_best_bot.user_sessions:
@@ -1060,10 +1077,16 @@ def handle_ultimate_premium_callbacks(call):
 <b>│   {EMOJIS['crown']} PREMIUM DEVELOPER SUPPORT READY {EMOJIS['crown']}   │</b>
 <b>└───────────────────────────────────────────────────┘</b>
             """
-            bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode='HTML',
-            reply_markup=types.InlineKeyboardMarkup().add(
-                types.InlineKeyboardButton(f"{EMOJIS['crystal']} Contact {DEVELOPER_USERNAME}", url=f"https://t.me/{DEVELOPER_USERNAME[1:]}"),
-                types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Menu", callback_data="main_menu")))
+            try:
+                bot.edit_message_caption(caption=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                         reply_markup=types.InlineKeyboardMarkup().add(
+                                             types.InlineKeyboardButton(f"{EMOJIS['crystal']} Contact {DEVELOPER_USERNAME}", url=f"https://t.me/{DEVELOPER_USERNAME[1:]}"),
+                                             types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Menu", callback_data="main_menu")))
+            except:
+                bot.edit_message_text(text=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                      reply_markup=types.InlineKeyboardMarkup().add(
+                                          types.InlineKeyboardButton(f"{EMOJIS['crystal']} Contact {DEVELOPER_USERNAME}", url=f"https://t.me/{DEVELOPER_USERNAME[1:]}"),
+                                          types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Menu", callback_data="main_menu")))
 
         elif call.data == "about_bot":
             sys_info = get_system_info()
@@ -1106,9 +1129,12 @@ def handle_ultimate_premium_callbacks(call):
 <b>│   {EMOJIS['crown']} WORLD'S BEST BOT SERVING YOU {EMOJIS['crown']}   │</b>
 <b>└───────────────────────────────────────────────────┘</b>
             """
-            bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode='HTML',
-            reply_markup=types.InlineKeyboardMarkup().add(
-                types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Menu", callback_data="main_menu")))
+            try:
+                bot.edit_message_caption(caption=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                         reply_markup=types.InlineKeyboardMarkup().add(types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Menu", callback_data="main_menu")))
+            except:
+                bot.edit_message_text(text=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                      reply_markup=types.InlineKeyboardMarkup().add(types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Menu", callback_data="main_menu")))
 
         elif call.data == "help_center":
             text = f"""
@@ -1146,10 +1172,16 @@ def handle_ultimate_premium_callbacks(call):
 <b>│     {EMOJIS['nova']} PREMIUM HELP CENTER READY {EMOJIS['nova']}     │</b>
 <b>└───────────────────────────────────────────────────┘</b>
             """
-            bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode='HTML',
-            reply_markup=types.InlineKeyboardMarkup().add(
-                types.InlineKeyboardButton(f"{EMOJIS['shield']} Contact Support", callback_data="developer_support"),
-                types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Menu", callback_data="main_menu")))
+            try:
+                bot.edit_message_caption(caption=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                         reply_markup=types.InlineKeyboardMarkup().add(
+                                             types.InlineKeyboardButton(f"{EMOJIS['shield']} Contact Support", callback_data="developer_support"),
+                                             types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Menu", callback_data="main_menu")))
+            except:
+                bot.edit_message_text(text=text, chat_id=call.message.chat.id, message_id=call.message.message_id, parse_mode='HTML',
+                                      reply_markup=types.InlineKeyboardMarkup().add(
+                                          types.InlineKeyboardButton(f"{EMOJIS['shield']} Contact Support", callback_data="developer_support"),
+                                          types.InlineKeyboardButton(f"{EMOJIS['rainbow']} ← Back to Menu", callback_data="main_menu")))
 
     except Exception as e:
         print(f"Callback error: {e}")
@@ -1251,7 +1283,7 @@ class WorldsBestUltraPremiumBot:
 {EMOJIS['sparkles']} <b>Premium Recommendations:</b>
 • {EMOJIS['gem']} Use JPG, PNG, WebP for photos
 • {EMOJIS['lightning']} Use MP4, MOV, AVI for videos
-• {EMOJIS['crystal']} Keep file size under 20MB for optimal results
+• {EMOJIS['crystal']} Keep file size under 50MB for optimal results
 • {EMOJIS['magic']} Ensure good original quality for best enhancement
 
 <b>┌────────────────────────────────────────────┐</b>
@@ -1306,8 +1338,8 @@ def prompt_platform_selection(chat_id):
 def ultimate_start_command(message):
     user_name = message.from_user.first_name or "Premium User"
     current_time = datetime.now().strftime("%H:%M")
-
- ultimate_welcome_text = f"""
+    
+    ultimate_welcome_text = f"""
 <b>╔═══════════════════════════════════════════════════╗</b>
 <b>║      {EMOJIS['crown']} WELCOME TO {BOT_NAME} {EMOJIS['crown']}      ║</b>
 <b>╚═══════════════════════════════════════════════════╝</b>
@@ -1348,4 +1380,146 @@ def ultimate_start_command(message):
 <b>└───────────────────────────────────────────────────┘</b>
 
 {EMOJIS['info']} <i>Tip: Select a platform button first, then send your link for best results!</i>
-"""
+    """
+    
+    bot.send_message(message.chat.id, ultimate_welcome_text,
+                    reply_markup=worlds_best_bot.create_main_keyboard(),
+                    parse_mode='HTML')
+
+# URL HANDLER WITH PLATFORM CHECK
+@bot.message_handler(func=lambda msg: any(platform in msg.text.lower() for platform in 
+    ['youtube.com', 'youtu.be', 'tiktok.com', 'instagram.com', 'facebook.com', 
+     'twitter.com', 'reddit.com', 'vimeo.com', 'vm.tiktok', 'vt.tiktok', 'x.com', 'fb.watch']))
+def handle_ultimate_video_url(message):
+    url = message.text.strip()
+    user_id = message.chat.id
+    
+    if user_id not in worlds_best_bot.user_sessions:
+        prompt_platform_selection(message.chat.id)
+        return
+    
+    selected_platform = worlds_best_bot.user_sessions[user_id]
+    
+    premium_processing_msg = bot.send_message(message.chat.id, f"""
+<b>╔═══════════════════════════════════════════════════╗</b>
+<b>║      {EMOJIS['rocket']} {BOT_NAME} ACTIVATED {EMOJIS['rocket']}      ║</b>
+<b>╚═══════════════════════════════════════════════════╝</b>
+
+{EMOJIS['lightning']} <b>Premium URL Detected:</b> 
+<code>{url[:40]}{'...' if len(url) > 40 else ''}</code>
+
+{EMOJIS['magic']} <b>Platform:</b> <i>{selected_platform.title() if selected_platform else 'Universal'}</i>
+{EMOJIS['crystal']} <b>Quality:</b> <i>Ultra HD Premium Processing (up to 4K)</i>
+{EMOJIS['crown']} <b>Mode:</b> <i>Premium Treatment Activated</i>
+{EMOJIS['gem']} <b>Features:</b> <i>Watermark-free • Full captions • Large file support</i>
+
+{EMOJIS['fire']} <i>Please wait while {BOT_NAME} works its premium magic...</i>
+
+<b>┌───────────────────────────────────────────────────┐</b>
+<b>│        {EMOJIS['nova']} Premium Processing Started {EMOJIS['nova']}        │</b>
+<b>└───────────────────────────────────────────────────┘</b>
+    """, parse_mode='HTML')
+    
+    threading.Thread(target=worlds_best_bot.download_video_premium, 
+                    args=(url, message.chat.id, premium_processing_msg.message_id, selected_platform)).start()
+
+# 📸 PHOTO HANDLER FOR AI ENHANCEMENT
+@bot.message_handler(content_types=['photo'])
+def handle_ultimate_photo_enhancement(message):
+    try:
+        file_info = bot.get_file(message.photo[-1].file_id)
+        img_data = bot.download_file(file_info.file_path)
+        
+        input_path = os.path.join(TMP_DIR, f"input_premium_photo_{message.from_user.id}_{int(time.time())}.jpg")
+        
+        with open(input_path, 'wb') as f:
+            f.write(img_data)
+        
+        file_size_mb = len(img_data) / (1024 * 1024)
+        
+        premium_processing_msg = bot.send_message(message.chat.id, f"""
+<b>╔═══════════════════════════════════════════════════╗</b>
+<b>║   {EMOJIS['magic']} PREMIUM AI 4K PHOTO ENHANCEMENT {EMOJIS['magic']}   ║</b>
+<b>╚═══════════════════════════════════════════════════╝</b>
+
+{EMOJIS['crown']} <b>{BOT_NAME} Premium AI Analysis:</b>
+<i>Scanning your photo with quantum premium algorithms...</i>
+
+{EMOJIS['crystal']} <b>Enhancement Mode:</b> <i>Premium 4K Ultra HD (Wink App Quality)</i>
+{EMOJIS['lightning']} <b>Algorithm:</b> <i>Perfect OpenCV Super Resolution AI</i>
+{EMOJIS['gem']} <b>File Size:</b> <i>{file_size_mb:.1f}MB • Premium Processing</i>
+{EMOJIS['fire']} <b>Expected Output:</b> <i>4x Quality Boost • Crystal Clear</i>
+
+{EMOJIS['sparkles']} <b>Premium Features Activating:</b>
+• {EMOJIS['diamond']} 4K resolution upscaling (4x enhancement)
+• {EMOJIS['rainbow']} Perfect color enhancement (zero distortion)
+• {EMOJIS['nova']} Professional sharpness optimization
+• {EMOJIS['sun']} Advanced noise reduction & polish
+
+<i>Transforming your photo into a premium 4K masterpiece...</i>
+
+<b>┌───────────────────────────────────────────────────┐</b>
+<b>│       {EMOJIS['sparkles']} Premium AI Magic in Progress {EMOJIS['sparkles']}       │</b>
+<b>└───────────────────────────────────────────────────┘</b>
+        """, parse_mode='HTML')
+        
+        threading.Thread(target=worlds_best_bot.enhance_photo_premium, 
+                        args=(input_path, message.chat.id, premium_processing_msg.message_id)).start()
+        
+    except Exception as e:
+        bot.reply_to(message, f"{EMOJIS['error']} Premium photo processing error: {str(e)[:50]}...")
+
+# 🎬 VIDEO HANDLER FOR AI ENHANCEMENT
+@bot.message_handler(content_types=['video', 'document'])
+def handle_ultimate_video_enhancement(message):
+    if message.content_type == 'video' or (message.content_type == 'document' and 
+        message.document.mime_type and message.document.mime_type.startswith('video/')):
+        try:
+            file_info = bot.get_file(message.video.file_id if message.content_type == 'video' else message.document.file_id)
+            video_data = bot.download_file(file_info.file_path)
+            
+            input_path = os.path.join(TMP_DIR, f"input_premium_video_{message.from_user.id}_{int(time.time())}.mp4")
+            
+            with open(input_path, 'wb') as f:
+                f.write(video_data)
+            
+            file_size_mb = len(video_data) / (1024 * 1024)
+            duration = message.video.duration if message.content_type == 'video' else "Unknown"
+            
+            premium_processing_msg = bot.send_message(message.chat.id, f"""
+<b>╔═══════════════════════════════════════════════════╗</b>
+<b>║   {EMOJIS['magic']} PREMIUM AI 4K VIDEO ENHANCEMENT {EMOJIS['magic']}   ║</b>
+<b>╚═══════════════════════════════════════════════════╝</b>
+
+{EMOJIS['crown']} <b>{BOT_NAME} Premium AI Analysis:</b>
+<i>Scanning your video with quantum premium algorithms...</i>
+
+{EMOJIS['crystal']} <b>Enhancement Mode:</b> <i>Premium 4K Ultra HD (Wink App Quality)</i>
+{EMOJIS['lightning']} <b>Algorithm:</b> <i>Advanced Video Upscaling with ffmpeg</i>
+{EMOJIS['gem']} <b>File Size:</b> <i>{file_size_mb:.1f}MB • Duration: {duration}s</i>
+{EMOJIS['fire']} <b>Expected Output:</b> <i>4K Resolution • Crystal Clear</i>
+
+{EMOJIS['sparkles']} <b>Premium Video Features Activating:</b>
+• {EMOJIS['diamond']} 4K resolution upscaling (3840x2160)
+• {EMOJIS['rainbow']} Perfect color & contrast optimization
+• {EMOJIS['nova']} Professional sharpness enhancement
+• {EMOJIS['sun']} Advanced noise reduction & polish
+• {EMOJIS['shield']} Perfect audio preservation
+
+<i>Transforming your video into a premium 4K masterpiece...</i>
+
+<b>┌───────────────────────────────────────────────────┐</b>
+<b>│       {EMOJIS['sparkles']} Premium AI Magic in Progress {EMOJIS['sparkles']}       │</b>
+<b>└───────────────────────────────────────────────────┘</b>
+            """, parse_mode='HTML')
+            
+            threading.Thread(target=worlds_best_bot.enhance_video_premium, 
+                            args=(input_path, message.chat.id, premium_processing_msg.message_id)).start()
+            
+        except Exception as e:
+            bot.reply_to(message, f"{EMOJIS['error']} Premium video processing error: {str(e)[:50]}...")
+
+# Run the bot
+if __name__ == '__main__':
+    print(f"{EMOJIS['crown']} World's Best Premium Bot Started!")
+    bot.polling(none_stop=True)
