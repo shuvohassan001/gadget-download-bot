@@ -1,0 +1,6 @@
+opencv-contrib-python
+Pillow
+yt-dlp
+pyTelegramBotAPI
+requests
+numpy
