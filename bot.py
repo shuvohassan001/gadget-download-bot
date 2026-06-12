@@ -28,9 +28,9 @@ from functools import wraps
 
 # Bot configuration
 BOT_NAME = "𝐆𝐀𝐃𝐆𝐄𝐓 𝐁𝐎𝐗 𝐒𝐔𝐏𝐄𝐑 𝐓𝐎𝐎𝐋𝐒"
-BOT_TOKEN = "8483505119:AAGRFSdXLhiu7KfYtZPibk8-LQoElLTMtKQ"
+BOT_TOKEN = "8376372485:AAHqhqs862jQsKYwGegD5zzlMToRWhAkIUI"
 DEVELOPER_USERNAME = "@shuvohassan00"
-DEVELOPER_ID = "6074463370"
+DEVELOPER_ID = "8591429820"
 BOT_VERSION = "4.0 ULTRA PREMIUM SUPREME"
 
 TMP_DIR = "gadget_box_temp"
